@@ -8,10 +8,8 @@ Based on the official busybox image and build via multi-stage build himself to m
 For more information on the great tool UPX check out their [GitHub project](https://github.com/upx/upx)!
 
 ## Usage
-### CMD
 To compress any file run following command
 
 ```bash
 $ docker run --rm -w $PWD -v $PWD:$PWD ghcr.io/sollie/docker-upx:latest --best --lzma -o [compressed file name] [file name]
 ```
-

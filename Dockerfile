@@ -1,34 +1,38 @@
 # build stage
-FROM alpine:3.6 as builder
+FROM alpine:3.17 as builder
 
 # devel branch
-ARG UPX_COMMIT_HASH=HEAD
+ARG UPX_VER
 ENV LDFLAGS=-static
 
 # download source and compile
 RUN apk add --no-cache \
-    build-base \
-    git \
-    ucl-dev \
-    zlib-dev \
- && git clone -b devel --recursive https://github.com/upx/upx.git /upx \
- && git -C /upx reset --hard "${UPX_COMMIT_HASH}" \
- && sed -i 's/ -O2/ /' /upx/src/Makefile \
- && make -j10 -C /upx/src upx.out CHECK_WHITESPACE=
+  build-base \
+  cmake \
+  tar \
+  wget \
+  zlib-dev \
+  xz
 
-# compress himself; absolutley barbaric ;)
-RUN /upx/src/upx.out \
-    --lzma \
-    -o /usr/bin/upx \
-    /upx/src/upx.out
+RUN wget https://github.com/upx/upx/releases/download/v$UPX_VER/upx-$UPX_VER-src.tar.xz -O /upx.tar.xz \
+  && tar -xvf /upx.tar.xz -C / \
+  && mv /upx-$UPX_VER-src /upx
+
+RUN make -C /upx/src release
+
+RUN /upx/build/release/upx \
+  --lzma \
+  -o /usr/bin/upx \
+  /upx/build/release/upx
 
 # final stage
-FROM busybox:1.27.2
+FROM busybox:1.36.0
 
 ARG BUILD_DATE
 
 LABEL org.label-schema.build-date=${BUILD_DATE} \
-      org.label-schema.schema-version="1.0"
+  org.label-schema.schema-version="1.0"
+LABEL org.opencontainers.image.source https://github.com/sollie/docker-upx
 
 COPY --from=builder /usr/bin/upx /usr/bin/upx
 

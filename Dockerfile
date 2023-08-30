@@ -26,7 +26,7 @@ RUN /upx/build/release/upx \
   /upx/build/release/upx
 
 # final stage
-FROM busybox:1.36.0
+FROM scratch
 
 ARG BUILD_DATE
 

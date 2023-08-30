@@ -1,5 +1,5 @@
 # build stage
-FROM alpine:3.17 as builder
+FROM alpine:3 as builder
 
 # devel branch
 ARG UPX_VER

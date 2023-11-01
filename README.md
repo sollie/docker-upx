@@ -1,15 +1,22 @@
-# UPX
+# UPX Docker Image
 
-[![Docker build](https://github.com/sollie/docker-upx/actions/workflows/build.yml/badge.svg)](https://github.com/sollie/docker-upx/actions/workflows/build.yml)
+![Docker build status](https://github.com/sollie/docker-upx/actions/workflows/build.yml/badge.svg)
 
-## Overview
-A small image for usage in multi-stage Docker builds to compress binary files like Go or Rust.
-Based on the official busybox image and build via multi-stage build himself to make the image as small as possible **~1.7MB**
-For more information on the great tool UPX check out their [GitHub project](https://github.com/upx/upx)!
+## Introduction
+This repository contains a lightweight Docker image designed for use in multi-stage
+Docker builds. The image is based on the official busybox image and is built using a
+multi-stage process to minimize its size.
 
-## Usage
-To compress any file run following command
+For more details about UPX, the powerful executable packer used in this image,
+please visit the [UPX GitHub project](https://github.com/upx/upx).
+
+## How to Use
+To compress a file using this Docker image, execute the following command:
 
 ```bash
-$ docker run --rm -w $PWD -v $PWD:$PWD ghcr.io/sollie/docker-upx:latest --best --lzma -o [compressed file name] [file name]
+$ docker run --rm -w $PWD -v $PWD:$PWD ghcr.io/sollie/docker-upx:latest --best --lzma -o [output file name] [input file name]
 ```
+
+Replace `[output file name]` with the name you want for your compressed file,
+and `[input file name]` with the name of the file you want to compress.
+The `--best` and `--lzma` options ensure optimal compression.

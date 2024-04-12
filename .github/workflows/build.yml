@@ -45,5 +45,5 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           build-args: |
-            UPX_VERSION=${{ var.UPX_VERSION }}
+            UPX_VERSION=${{ vars.UPX_VERSION }}
           push: false

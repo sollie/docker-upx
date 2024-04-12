@@ -45,7 +45,7 @@ jobs:
           cache-to: type=gha,mode=max
           push: true
           build-args: |
-            UPX_VERSION=${{ env.UPX_VERSION }}
+            UPX_VERSION=${{ vars.UPX_VERSION }}
           tags: |
             ghcr.io/${{ github.repository }}:latest
             ghcr.io/${{ github.repository }}:${{ steps.tag.outputs.tag }}

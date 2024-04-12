@@ -1,8 +1,7 @@
 # build stage
-FROM alpine:3 as builder
+FROM alpine:3.18 as builder
 
-# devel branch
-ARG UPX_VER
+ARG UPX_VERSION
 ENV LDFLAGS=-static
 
 # download source and compile
@@ -14,9 +13,9 @@ RUN apk add --no-cache \
   zlib-dev \
   xz
 
-RUN wget https://github.com/upx/upx/releases/download/v$UPX_VER/upx-$UPX_VER-src.tar.xz -O /upx.tar.xz \
+RUN wget https://github.com/upx/upx/releases/download/v$UPX_VERSION/upx-$UPX_VERSION-src.tar.xz -O /upx.tar.xz \
   && tar -xvf /upx.tar.xz -C / \
-  && mv /upx-$UPX_VER-src /upx
+  && mv /upx-$UPX_VERSION-src /upx
 
 RUN make -C /upx/src release
 
@@ -25,7 +24,6 @@ RUN /upx/build/release/upx \
   -o /usr/bin/upx \
   /upx/build/release/upx
 
-# final stage
 FROM busybox:1.36.0
 
 ARG BUILD_DATE

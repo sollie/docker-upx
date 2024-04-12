@@ -36,11 +36,6 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GHCR_PAT }}
 
-      - name: UPX version to build
-        run: |
-          UPX_VERSION=$(cat .github/upx_version.txt)
-          echo "UPX_VERSION=${UPX_VERSION}" >> $GITHUB_ENV
-
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v5
         with:
@@ -50,5 +45,5 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           build-args: |
-            UPX_VER=${{ env.UPX_VERSION }}
+            UPX_VERSION=${{ var.UPX_VERSION }}
           push: false

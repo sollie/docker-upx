@@ -1,5 +1,5 @@
 # build stage
-FROM alpine:3.18 as builder
+FROM alpine:3.19 as builder
 
 ARG UPX_VERSION
 ENV LDFLAGS=-static

@@ -24,7 +24,7 @@ RUN /upx/build/release/upx \
   -o /usr/bin/upx \
   /upx/build/release/upx
 
-FROM busybox:1.36.1
+FROM busybox:1.37.0
 
 ARG BUILD_DATE
 

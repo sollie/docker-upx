@@ -5,6 +5,9 @@ on:
     tags:
       - "v*"
 
+env:
+  UPX_VERSION: 5.0.0
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -45,7 +48,7 @@ jobs:
           cache-to: type=gha,mode=max
           push: true
           build-args: |
-            UPX_VERSION=${{ vars.UPX_VERSION }}
+            UPX_VERSION=${{ env.UPX_VERSION }}
           tags: |
             ghcr.io/${{ github.repository }}:latest
             ghcr.io/${{ github.repository }}:${{ steps.tag.outputs.tag }}

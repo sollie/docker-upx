@@ -10,6 +10,9 @@ on:
     branches:
       - main
 
+env:
+  UPX_VERSION: 5.0.0
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -45,5 +48,5 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           build-args: |
-            UPX_VERSION=${{ vars.UPX_VERSION }}
+            UPX_VERSION=${{ env.UPX_VERSION }}
           push: false

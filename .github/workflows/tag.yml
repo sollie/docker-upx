@@ -1,4 +1,7 @@
 name: 'Docker build (tag)'
+permissions:
+  contents: read
+  packages: write
 
 on:
   push:

@@ -15,7 +15,7 @@ permissions:
   packages: write
 
 env:
-  UPX_VERSION: 5.0.0
+  UPX_VERSION: 5.0.1
 
 jobs:
   build:

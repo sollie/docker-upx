@@ -18,7 +18,7 @@ jobs:
     name: Build and upload on tag
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Get short SHA
         id: sha_short

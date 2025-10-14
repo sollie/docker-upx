@@ -30,7 +30,7 @@ ARG BUILD_DATE
 
 LABEL org.label-schema.build-date=${BUILD_DATE} \
   org.label-schema.schema-version="1.0"
-LABEL org.opencontainers.image.source https://github.com/sollie/docker-upx
+LABEL org.opencontainers.image.source=https://github.com/sollie/docker-upx
 
 COPY --from=builder /usr/bin/upx /usr/bin/upx
 

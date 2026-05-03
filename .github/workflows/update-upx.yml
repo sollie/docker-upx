@@ -19,8 +19,13 @@ jobs:
 
       - name: Get latest UPX release
         id: upstream
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          latest=$(curl -sf https://api.github.com/repos/upx/upx/releases/latest | jq -r '.tag_name' | sed 's/^v//')
+          latest=$(curl -sf \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/upx/upx/releases/latest | jq -r '.tag_name' | sed 's/^v//')
           echo "version=$latest" >> $GITHUB_OUTPUT
 
       - name: Get current version

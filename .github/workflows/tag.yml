@@ -24,9 +24,11 @@ jobs:
 
       - name: Get UPX version
         id: version
+        env:
+          INPUT_VERSION: ${{ inputs.upx_version }}
         run: |
-          if [ -n "${{ inputs.upx_version }}" ]; then
-            echo "upx_version=${{ inputs.upx_version }}" >> $GITHUB_OUTPUT
+          if [ -n "$INPUT_VERSION" ]; then
+            echo "upx_version=$INPUT_VERSION" >> $GITHUB_OUTPUT
           else
             echo "upx_version=$(cat VERSION)" >> $GITHUB_OUTPUT
           fi
@@ -37,7 +39,17 @@ jobs:
 
       - id: tag
         name: Get tag
-        run: echo "tag=v${{ steps.version.outputs.upx_version }}" >> $GITHUB_OUTPUT
+        run: |
+          if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
+            expected="v${{ steps.version.outputs.upx_version }}"
+            if [ "${GITHUB_REF_NAME}" != "${expected}" ]; then
+              echo "Git tag '${GITHUB_REF_NAME}' does not match VERSION-derived tag '${expected}'" >&2
+              exit 1
+            fi
+            echo "tag=${GITHUB_REF_NAME}" >> $GITHUB_OUTPUT
+          else
+            echo "tag=v${{ steps.version.outputs.upx_version }}" >> $GITHUB_OUTPUT
+          fi
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v4

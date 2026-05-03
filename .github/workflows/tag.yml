@@ -37,6 +37,10 @@ jobs:
         id: sha_short
         run: echo "sha_short=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
 
+      - name: Get build date
+        id: build_date
+        run: echo "date=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_OUTPUT
+
       - id: tag
         name: Get tag
         run: |
@@ -76,7 +80,7 @@ jobs:
           push: true
           build-args: |
             UPX_VERSION=${{ steps.version.outputs.upx_version }}
-            BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+            BUILD_DATE=${{ steps.build_date.outputs.date }}
           tags: |
             ghcr.io/${{ github.repository }}:latest
             ghcr.io/${{ github.repository }}:${{ steps.tag.outputs.tag }}

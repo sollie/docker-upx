@@ -14,9 +14,6 @@ permissions:
   contents: read
   packages: write
 
-env:
-  UPX_VERSION: 5.0.1
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -25,9 +22,17 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v6
 
+      - name: Get UPX version
+        id: version
+        run: echo "upx_version=$(cat VERSION)" >> $GITHUB_OUTPUT
+
       - name: Get short SHA
         id: sha_short
         run: echo "sha_short=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+
+      - name: Get build date
+        id: build_date
+        run: echo "date=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_OUTPUT
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v4
@@ -52,5 +57,6 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           build-args: |
-            UPX_VERSION=${{ env.UPX_VERSION }}
+            UPX_VERSION=${{ steps.version.outputs.upx_version }}
+            BUILD_DATE=${{ steps.build_date.outputs.date }}
           push: false

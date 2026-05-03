@@ -11,6 +11,9 @@ For more details about UPX, the powerful executable packer used in this image,
 please visit the [UPX GitHub project](https://github.com/upx/upx).
 
 ## How to Use
+
+### Standalone
+
 To compress a file using this Docker image, execute the following command:
 
 ```bash
@@ -20,3 +23,11 @@ $ docker run --rm -w $PWD -v $PWD:$PWD ghcr.io/sollie/docker-upx:latest --best -
 Replace `[output file name]` with the name you want for your compressed file,
 and `[input file name]` with the name of the file you want to compress.
 The `--best` and `--lzma` options ensure optimal compression.
+
+### Multi-stage Dockerfile
+
+```dockerfile
+COPY --from=ghcr.io/sollie/docker-upx:latest /usr/bin/upx /usr/bin/upx
+
+RUN upx --best --lzma -o /compressed-binary /original-binary
+```

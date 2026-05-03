@@ -37,7 +37,17 @@ jobs:
 
       - id: tag
         name: Get tag
-        run: echo "tag=v${{ steps.version.outputs.upx_version }}" >> $GITHUB_OUTPUT
+        run: |
+          if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
+            expected_tag="v${{ steps.version.outputs.upx_version }}"
+            if [ "${GITHUB_REF_NAME}" != "${expected_tag}" ]; then
+              echo "Expected pushed tag '${expected_tag}' to match GITHUB_REF_NAME '${GITHUB_REF_NAME}'" >&2
+              exit 1
+            fi
+            echo "tag=${GITHUB_REF_NAME}" >> $GITHUB_OUTPUT
+          else
+            echo "tag=v${{ steps.version.outputs.upx_version }}" >> $GITHUB_OUTPUT
+          fi
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v4

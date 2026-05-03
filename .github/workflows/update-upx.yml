@@ -1,0 +1,46 @@
+name: 'Update UPX version'
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    name: Check and update UPX version
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v6
+
+      - name: Get latest UPX release
+        id: upstream
+        run: |
+          latest=$(curl -sf https://api.github.com/repos/upx/upx/releases/latest | jq -r '.tag_name' | sed 's/^v//')
+          echo "version=$latest" >> $GITHUB_OUTPUT
+
+      - name: Get current version
+        id: current
+        run: echo "version=$(cat VERSION)" >> $GITHUB_OUTPUT
+
+      - name: Write new version
+        if: steps.upstream.outputs.version != steps.current.outputs.version
+        run: echo "${{ steps.upstream.outputs.version }}" > VERSION
+
+      - name: Open PR
+        if: steps.upstream.outputs.version != steps.current.outputs.version
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: update UPX to v${{ steps.upstream.outputs.version }}"
+          branch: update/upx-${{ steps.upstream.outputs.version }}
+          title: "chore: update UPX to v${{ steps.upstream.outputs.version }}"
+          body: |
+            Upstream UPX released [v${{ steps.upstream.outputs.version }}](https://github.com/upx/upx/releases/tag/v${{ steps.upstream.outputs.version }}).
+
+            After merging, run the **Release** workflow to build and publish the new image.
+          add-paths: VERSION

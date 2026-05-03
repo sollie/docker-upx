@@ -14,9 +14,6 @@ permissions:
   contents: read
   packages: write
 
-env:
-  UPX_VERSION: 5.0.1
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -24,6 +21,10 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v6
+
+      - name: Get UPX version
+        id: version
+        run: echo "upx_version=$(cat VERSION)" >> $GITHUB_OUTPUT
 
       - name: Get short SHA
         id: sha_short
@@ -52,5 +53,6 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           build-args: |
-            UPX_VERSION=${{ env.UPX_VERSION }}
+            UPX_VERSION=${{ steps.version.outputs.upx_version }}
+            BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
           push: false

@@ -4,13 +4,15 @@ on:
   push:
     tags:
       - "v*"
+  workflow_call:
+    inputs:
+      upx_version:
+        required: true
+        type: string
 
 permissions:
   contents: read
   packages: write
-
-env:
-  UPX_VERSION: 5.0.1
 
 jobs:
   build:
@@ -20,19 +22,28 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v6
 
+      - name: Get UPX version
+        id: version
+        run: |
+          if [ -n "${{ inputs.upx_version }}" ]; then
+            echo "upx_version=${{ inputs.upx_version }}" >> $GITHUB_OUTPUT
+          else
+            echo "upx_version=$(cat VERSION)" >> $GITHUB_OUTPUT
+          fi
+
       - name: Get short SHA
         id: sha_short
         run: echo "sha_short=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
 
       - id: tag
         name: Get tag
-        run: echo "tag=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
+        run: echo "tag=v${{ steps.version.outputs.upx_version }}" >> $GITHUB_OUTPUT
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v4
 
       - name: Set up Docker Buildx
-        id:   buildx
+        id: buildx
         uses: docker/setup-buildx-action@v4
 
       - name: Login to GitHub Container Registry
@@ -52,7 +63,8 @@ jobs:
           cache-to: type=gha,mode=max
           push: true
           build-args: |
-            UPX_VERSION=${{ env.UPX_VERSION }}
+            UPX_VERSION=${{ steps.version.outputs.upx_version }}
+            BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
           tags: |
             ghcr.io/${{ github.repository }}:latest
             ghcr.io/${{ github.repository }}:${{ steps.tag.outputs.tag }}

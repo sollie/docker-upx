@@ -1,0 +1,53 @@
+name: 'Release'
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    name: Create release and build
+    outputs:
+      upx_version: ${{ steps.version.outputs.upx_version }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Get UPX version
+        id: version
+        run: echo "upx_version=$(cat VERSION)" >> $GITHUB_OUTPUT
+
+      - name: Check tag does not exist
+        run: |
+          if git rev-parse "v${{ steps.version.outputs.upx_version }}" >/dev/null 2>&1; then
+            echo "Tag v${{ steps.version.outputs.upx_version }} already exists. Bump VERSION before releasing."
+            exit 1
+          fi
+
+      - name: Create and push tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag "v${{ steps.version.outputs.upx_version }}"
+          git push origin "v${{ steps.version.outputs.upx_version }}"
+
+      - name: Create GitHub Release
+        run: |
+          gh release create "v${{ steps.version.outputs.upx_version }}" \
+            --title "v${{ steps.version.outputs.upx_version }}" \
+            --generate-notes \
+            --latest
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build:
+    needs: release
+    uses: ./.github/workflows/tag.yml
+    with:
+      upx_version: ${{ needs.release.outputs.upx_version }}
+    secrets: inherit

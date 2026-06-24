@@ -15,7 +15,7 @@ jobs:
     name: Check and update UPX version
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Get latest UPX release
         id: upstream
